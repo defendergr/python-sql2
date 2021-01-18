@@ -1,11 +1,15 @@
 import mysql.connector
 import datetime
 import tkinter as tk
+from tkinter import ttk
+from tkinter import *
 from tkinter import simpledialog
 import os
+# ------------------------------MS imports for admin privileges start---------------------------------------------------
 import ctypes
 import enum
 import sys
+# ------------------------------MS imports for admin privileges end-----------------------------------------------------
 
 class App():
     def __init__(self, root):
@@ -19,10 +23,10 @@ class App():
         pos_right = int(root.winfo_screenwidth()/3 - win_width/3)
         pos_down = int(root.winfo_screenheight()/3 - win_hight/3)
         root.geometry("800x450+{}+{}".format(pos_right, pos_down))
-        self.host = ''
-        self.user = ''
+        self.host = 'localhost'
+        self.user = 'root'
         self.pswd = ''
-        self.db = ''
+        self.db = 'company'
 
     def widgets(self):
         #basiko para8iro
@@ -102,11 +106,14 @@ class App():
         self.btn2.pack(side='left', expand=True, fill='both')
 
     def info(self):
-        tk.messagebox.showinfo('About', ' SQL Commander version 2 \n Credits: \n Βασίλης Κουτκούδης \n Κωνσταντίνος Καρακασίδης')
+        tk.messagebox.showinfo('About', ' SQL Commander version 3 \n Credits: \n Κωνσταντίνος Καρακασίδης \n Βασίλης Κουτκούδης')
 
     def close(self):
         self.buttondb["state"] = "normal"
         self.cf.destroy()
+
+    def _on_mousewheel(self, event):
+        self.li.yview_scroll(int(-1*(event.delta/120)), "units")
 
     def dbCredentials(self):
         self.buttondb["state"] = "normal"
@@ -131,85 +138,49 @@ class App():
                 self.pos_matrix = self.canvas.create_window(400, 420, anchor='s', window=self.matrix)
                 self.error.set('Η εντολή "{}" ολοκληρώθηκε με επιτυχία\nΕκτελέστε την εντολή\nSELECT * FROM "TABLE"\nγια να δείτε τις αλλαγές'.format(sql[:6]))
             else:
-# ------------------------------Βασίλης Κουτκούδης code start------------------------------------------------------------
                 mycursor.execute(sql + ';')
                 myresult = mycursor.fetchall()
-                header = '''
-                                                    <!doctype html>
-                                                    <html lang="en">
-                                                      <head>
-                                                        <!-- Required meta tags -->
-                                                        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                display_first_row = ''
+                display_second_row = ''
+                display_third_row = ''
+                display_forth_row = ''
+                display_fifth_row = ''
+                display_sixth_row = ''
+                for x in myresult:
+                    display_first_row += str(x[0])+'\n'
+                    display_second_row += str(x[1])+'\n'
+                    display_third_row += str(x[2])+'\n'
+                    display_forth_row += str(x[3])+'\n'
+                    display_fifth_row += str(x[4])+'\n'
+                    display_sixth_row += str(x[5]) + '\n'
 
-                                                        <style>
-                                                            .top-space{{margin-top:70px;}}
-                                                            .bottom-space{{margin-bottom:70px;}}
-                                                            .center{{text-align:center;}}
-                                                        </style>
-
-                                                    	<!-- Bootstrap CSS -->
-                                                        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-                                                    	<!-- Font Awesome CSS -->
-                                                        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-                                                    	<title>Δοκιμαστική Σελίδα για ΒΔ Company!</title>
-                                                      </head>
-                                                      <body>
-                                                          <div class="container top-space bottom-space">
-                                                                <div class="center">
-                                                                    <h3>Αποτελέσματα ερωτήματος</h3>
-                                                                    <p>"{sql}"</p>
-                                                                </div>
-                                                              <table width="100%" colspan="2" rowspan="2">
-                                                    '''.format(sql=sql)
-
-                footer = '''
-                                                            </div>
-
-                                                                </table >
+                x, y = self.root.winfo_x()-200, self.root.winfo_y()-200
+                self.info = tk.Toplevel(self.root)
+                self.info.title('SQL Commander')
+                self.info.resizable(False, False)
+                self.info.geometry('1024x768+{}+{}'.format(x, y + 60))
+                self.info.attributes("-topmost", True)
+                #canvas
+                self.li = tk.Canvas(self.info, bg='lightgray')
+                self.li.pack(expand=1, fill='both', side=LEFT)
+                #canvas items
+                self.pos_text = self.li.create_text(512, 3, text='Αποτελέσματα ερωτήματος', font='Arial 20 bold', width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(512, 50, text=sql, font='Arial 14', width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(40, 100, text=display_first_row, font=self.font, width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(200, 100, text=display_second_row, font=self.font, width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(450, 100, text=display_third_row, font=self.font, width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(600, 100, text=display_forth_row, font=self.font, width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(750, 100, text=display_fifth_row, font=self.font, width=500, anchor='n', fill='black')
+                self.pos_text = self.li.create_text(900, 100, text=display_sixth_row, font=self.font, width=500, anchor='n', fill='black')
+                #scrollbar
+                self.vbar=ttk.Scrollbar(self.info,orient=VERTICAL, command=self.li.yview)
+                self.vbar.pack(side=RIGHT,fill=Y)
+                self.li.configure(yscrollcommand=self.vbar.set)
+                self.li.bind('<Configure>', lambda e: self.li.configure(scrollregion=self.li.bbox('all')))
+                self.li.bind_all("<MouseWheel>", self._on_mousewheel)
 
 
-                                                        <!-- Optional JavaScript -->
-                                                        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-                                                        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-                                                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-                                                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-                                                      </body>
-                                                    </html>
-                                                    '''
 
-                # i = 1 #TODO 1.1 bazei arithmo stis seires
-
-                # Δημιουργώ τον φάκελο "company" στον C για να έχουμε κοινό σημείο όλοι.
-                path = 'C:\\company\\'
-                if not os.path.isdir(path):
-                    os.mkdir(path)
-
-                f = open('C:\\company\\index.html', "w")  # Αυτό είναι το html αρχείο που δημιουργείται.
-
-                f.write(header)
-                for record in myresult:
-
-                    f.write('<tr>')
-
-                    # f.write('<td width="10px">')  #TODO 1.2 bazei arithmo stis seires
-                    # f.write(str(i))
-                    # f.write('</td>')
-
-                    for data in record:
-                        f.write('<td>')
-                        f.write(str(data.day) + '-' + str(data.month) + '-' + str(data.year)) if isinstance(data,
-                                                                                                            datetime.date) else f.write(
-                            str(data))
-                        f.write('</td>')
-
-                    f.write('</tr>')
-                    # i = i + 1 #TODO 1.3 bazei arithmo stis seires
-                f.write(footer)
-
-                f.close()
-# ------------------------------Βασίλης Κουτκούδης code end-------------------------------------------------------------
-                os.startfile('C:\\company\\index.html')
         except (mysql.connector.Error, mysql.connector.Warning) as err:
             self.matrix = tk.Label(self.canvas, fg='lightgreen', bg='black', font="Arial 12", textvariable=self.error, width=50, height=4, anchor='nw', padx=10, pady=5, justify=tk.LEFT)
             self.matrix.pack(fill='both', expand=1)

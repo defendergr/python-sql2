@@ -23,10 +23,10 @@ class App():
         pos_right = int(root.winfo_screenwidth()/3 - win_width/3)
         pos_down = int(root.winfo_screenheight()/3 - win_hight/3)
         root.geometry("800x450+{}+{}".format(pos_right, pos_down))
-        self.host = 'localhost'
-        self.user = 'root'
+        self.host = ''
+        self.user = ''
         self.pswd = ''
-        self.db = 'company'
+        self.db = ''
 
     def widgets(self):
         #basiko para8iro
@@ -106,7 +106,7 @@ class App():
         self.btn2.pack(side='left', expand=True, fill='both')
 
     def info(self):
-        tk.messagebox.showinfo('About', ' SQL Commander version 3 \n Credits: \n Κωνσταντίνος Καρακασίδης \n Βασίλης Κουτκούδης')
+        tk.messagebox.showinfo('About', ' SQL Commander version 3.1 \n Credits: \n Κωνσταντίνος Καρακασίδης \n Βασίλης Κουτκούδης')
 
     def close(self):
         self.buttondb["state"] = "normal"
@@ -178,6 +178,7 @@ class App():
                 self.li.configure(yscrollcommand=self.vbar.set)
                 self.li.bind('<Configure>', lambda e: self.li.configure(scrollregion=self.li.bbox('all')))
                 self.li.bind_all("<MouseWheel>", self._on_mousewheel)
+                self.error.set('Η εντολή "{}" ολοκληρώθηκε με επιτυχία'.format(sql))
 
 
 

@@ -17,6 +17,7 @@ class App():
         self.root = root
         root.title("SQL Commander")
         root.resizable(False,False)
+        self.root.iconbitmap("icon.ico")
         self.widgets()
         win_width = root.winfo_reqwidth()
         win_hight = root.winfo_reqheight()
@@ -158,6 +159,7 @@ class App():
                 self.info = tk.Toplevel(self.root)
                 self.info.title('SQL Commander')
                 self.info.resizable(False, False)
+                self.info.iconbitmap("icon.ico")
                 self.info.geometry('1024x768+{}+{}'.format(x, y + 60))
                 self.info.attributes("-topmost", True)
                 #canvas
